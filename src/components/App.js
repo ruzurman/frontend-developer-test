@@ -1,27 +1,51 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import api from '../lib/api';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
-const fetchData = async () => {
+import { DataContainer } from './DataContainer/DataContainer';
+import { TabPanel } from './TabPanel/TabPanel';
+
+const fetchUsersData = async () => {
   const result = await api.getUsersDiff();
-  console.log(result);
+
+  return result;
+};
+
+const fetchProjectsData = async () => {
+    const result = await api.getProjectsDiff();
+
+    return result;
 };
 
 export const App = () => {
-  return (
-    <Container className="app" fixed>
-      <Box data-testid="app-box" m={2}>
-        <Typography>Your app should show up here.</Typography>
-        {/* Just a dummy fetcher to show how the api should be used, this should be removed */}
-        <Button variant="contained" color="primary" onClick={fetchData}>
-          Test data fetch
-        </Button>
-      </Box>
-    </Container>
-  );
+    const [currentTab, setCurrentTab] = useState(0);
+
+    const switchTab = useCallback((event, newValue) => {
+        setCurrentTab (newValue);
+    }, []);
+
+    return (
+      <Container className="app" fixed>
+        <Box data-testid="app-box" m={2}>
+            <AppBar position="static">
+                <Tabs value={currentTab} onChange={switchTab}>
+                    <Tab label="Users" />
+                    <Tab label="Projects" />
+                </Tabs>
+            </AppBar>
+            <TabPanel activeTab={currentTab} index={0}>
+                <DataContainer buttonTitle={"Get users"} fetchFunction={fetchUsersData} />
+            </TabPanel>
+            <TabPanel activeTab={currentTab} index={1}>
+                <DataContainer buttonTitle={"Get projects"} fetchFunction={fetchProjectsData} />
+            </TabPanel>
+        </Box>
+      </Container>
+    )
 };
 
 export default App;

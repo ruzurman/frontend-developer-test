@@ -1,0 +1,7 @@
+.TabPanel {
+    display: none;
+}
+
+.TabPanel_active {
+    display: block;
+}
